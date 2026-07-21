@@ -1,0 +1,39 @@
+name: Build Bootloader
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install RISC-V Toolchain (GCC 8.4 - MounRiver Compatible)
+      run: |
+        wget -q https://github.com/xpack-dev-tools/riscv-none-embed-gcc-xpack/releases/download/v8.3.0-2.3/xpack-riscv-none-embed-gcc-8.3.0-2.3-linux-x64.tar.gz
+        tar -xzf xpack-riscv-none-embed-gcc-8.3.0-2.3-linux-x64.tar.gz
+        
+        sudo mkdir -p /opt/wch/mounriver-studio-toolchain-riscv/bin
+        sudo ln -s $GITHUB_WORKSPACE/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin/riscv-none-embed-gcc /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-gcc
+        sudo ln -s $GITHUB_WORKSPACE/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin/riscv-none-embed-g++ /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-g++
+        sudo ln -s $GITHUB_WORKSPACE/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin/riscv-none-embed-objcopy /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-objcopy
+        sudo ln -s $GITHUB_WORKSPACE/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin/riscv-none-embed-size /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-size
+
+    - name: Build Project
+      run: |
+        make -j$(nproc)
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: bootloader-binary
+        path: |
+          *.bin
+          *.hex
+          *.elf
+          build/
