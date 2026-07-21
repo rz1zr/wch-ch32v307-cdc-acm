@@ -5,10 +5,6 @@
 * Date               : 2022/01/02
 * Description        : cdc acm test.
 *******************************************************************************/
-
-/*
- *@Note
-*/
 #include "debug.h"
 #include "usbd_core.h"
 #include "usbd_cdc.h"
