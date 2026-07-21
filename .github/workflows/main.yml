@@ -27,6 +27,8 @@ jobs:
     - name: Build Project
       run: |
         make -j$(nproc)
+        /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-objcopy -O binary cdc-acm.elf cdc-acm.bin
+        /opt/wch/mounriver-studio-toolchain-riscv/bin/riscv-none-embed-objcopy -O ihex cdc-acm.elf cdc-acm.hex
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
@@ -36,4 +38,3 @@ jobs:
           *.bin
           *.hex
           *.elf
-          build/
